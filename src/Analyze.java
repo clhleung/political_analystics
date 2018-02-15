@@ -17,13 +17,7 @@ public class Analyze {
 		String rex = "^[a-zA-Z0-9]{9}[|][NAT]{0,1}[|][!-{}~]{0,3}[|][!-{}~]{0,5}[|][!-{}~]{0,18}[|][!-{}~]{0,3}[|][!-{}~]{0,3}[|][!-{}~]{1,200}[|][!-{}~]{0,30}[|][!-{}~]{0,2}[|][!-{}~]{5,9}[|][!-{}~]{0,38}[|][!-{}~]{0,38}[|][0-9]{8}[|][0-9]{1,14}(([.][0-9]{0,1}[0-9]{0,1})?)[|][|].{0,}$";
 		Pattern patt = Pattern.compile(rex);
 		Matcher match = patt.matcher(test);
-		if (!match.matches()) isValid = false;
-		System.out.println(line);
-		System.out.println();
-		System.out.println();
-		System.out.println(isValid);
-		System.out.println();
-		System.out.println();
+		if (!match.matches()) isValid = false;		
 		return isValid;
 	}
 	
@@ -63,8 +57,8 @@ public class Analyze {
 	}
 	
 	// Function to parse data from the given itcont.txt
-	public ArrayList<String> dataToArray(String fileName){
-		ArrayList<String> theData = new ArrayList<String>();
+	public ArrayList<Record> dataToArray(String fileName){
+		ArrayList<Record> theData = new ArrayList<Record>();
 		// Convert to the appropriate file path
 		String dataPath = "../input/" + fileName;
 		try{
@@ -74,8 +68,11 @@ public class Analyze {
 			while ((readLine = d.readLine()) != null) {
 				// Add data to array
 				// Some way to parse through invalid rows
-				boolean check = rowValid(readLine);
-				if (check == true) theData.add(readLine);
+				boolean check = rowValid(readLine);				
+				if (check == true){
+					Record lines = new Record(readLine);
+					theData.add(lines);
+				} 
             }
 		} catch (IOException e){
 			e.printStackTrace();
@@ -90,11 +87,11 @@ public class Analyze {
 		String dataFile = args[0];
 		String percentFile = args[1];		
 		// ArrayList to hold data from itcont.txt
-		ArrayList <String> inputs = event.dataToArray(dataFile);
+		ArrayList <Record> inputs = event.dataToArray(dataFile);
 		// Percentile to calculate using the nearest-rank method
 		int perc = event.numInFile(percentFile);
         System.out.println(perc);	
-		System.out.println(inputs.get(1));
+		System.out.println(inputs.get(1).getName());
 		event.writeToFile();
 	}
 }
