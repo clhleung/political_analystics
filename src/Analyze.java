@@ -25,7 +25,7 @@ public class Analyze {
 	public void writeToFile(){
 		try {
 			BufferedWriter output = null;
-			File repeat = new File("../output/repeat_donors.txt");
+			File repeat = new File("./output/repeat_donors.txt");
 			output = new BufferedWriter(new FileWriter(repeat));
 			//output.write("45");
 			output.write("\n");
@@ -40,7 +40,7 @@ public class Analyze {
 	// Function to pull the percentile from percentile.txt
 	public int numInFile(String fileName){		
 		// Convert to the appropriate file path
-		String dataPath = "../input/" + fileName;
+		String dataPath = "./input/" + fileName;
 		int data = 0;
 		try{
 			File inData = new File(dataPath);
@@ -60,7 +60,7 @@ public class Analyze {
 	public ArrayList<Record> dataToArray(String fileName){
 		ArrayList<Record> theData = new ArrayList<Record>();
 		// Convert to the appropriate file path
-		String dataPath = "../input/" + fileName;
+		String dataPath = "./input/" + fileName;		
 		try{
 			File inData = new File(dataPath);
 			String readLine = "";
@@ -84,8 +84,10 @@ public class Analyze {
 	public static void main (String [] args) throws IOException {
 		Analyze event = new Analyze();
 		// Get file arguments passed in
-		String dataFile = args[0];
-		String percentFile = args[1];		
+		//String dataFile = args[0];
+		//String percentFile = args[1];
+        String dataFile = "itcont.txt";
+        String percentFile = "percentile.txt";	
 		// ArrayList to hold data from itcont.txt
 		ArrayList <Record> inputs = event.dataToArray(dataFile);
 		// Percentile to calculate using the nearest-rank method
