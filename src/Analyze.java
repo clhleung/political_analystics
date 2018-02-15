@@ -168,9 +168,11 @@ public class Analyze {
 				// Find percentile we need to calculate
 				Collections.sort(listOfAmts);
 				double index = (perc/100) * listOfAmts.size();
-				String row = rec.getCmte()+"|"+rec.getZip()+"|"+whenYr+"|";				
+				String row = rec.getCmte()+"|"+rec.getZip()+"|"+whenYr+"|";
+                double d = listOfAmts.get((int)index);	
+                int percent = (int)d;				
                 String answers = String.valueOf(listOfAmts.get((int)index));				
-				row += answers.substring(0,answers.indexOf('.')) + "|"+String.valueOf((int)money)+"|"+ contribut; 
+				row += String.valueOf(percent) + "|"+String.valueOf((int)money)+"|"+ contribut; 
 				results.add(row);
 			}
 		}		
