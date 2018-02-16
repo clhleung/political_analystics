@@ -90,7 +90,7 @@ public class Analyze {
 	public boolean dateValid(String date){
 		boolean isValid = true;
 		// Feb, April, June, Sept, Nov has 30 days, rest have 31 days, Feb is special case		
-		String rex = "(01|03|05|07|08|10|12)[0-2][0-9][0-9]{4}|(01|03|05|07|08|10|12)[0-3][0-1][0-9]{4}|(04|06|09|11)[0-3][0][0-9]{4}|(04|06|09|11)[0-2][0-9][0-9]{4}|(02)[0-2][0-9][0-9]{4}";
+		String rex = "^(01|03|05|07|08|10|12)[0-2][0-9][0-9]{4}|(01|03|05|07|08|10|12)[0-3][0-1][0-9]{4}|(04|06|09|11)[0-3][0][0-9]{4}|(04|06|09|11)[0-2][0-9][0-9]{4}|(02)[0-2][0-9][0-9]{4}$";
 		Pattern patt = Pattern.compile(rex);
 		Matcher match = patt.matcher(date);
 		if (!match.matches()) isValid = false;		
@@ -152,10 +152,11 @@ public class Analyze {
 				}			    
 			}	
 			
-			// Check if this record's donor is a repeat donor
-			if (nameZipNum.get(nameZip) > 1 && dateValid(rec.getDate()) == true){
+			// Check if this record's donor is a repeat donor given the date is valid
+			if ( dateValid(rec.getDate()) == true && nameZipNum.get(nameZip) > 1){
 				String whenYr = rec.getDate().substring(rec.getDate().length() - 4);
 				String candZipWhen = rec.getCmte()+rec.getZip()+ whenYr;
+				// Get current number of repeat donors so far based on records that have already been parsed
 				String contribut = String.valueOf(uniqueDonorCnt.get(candZipWhen));
 				// Find total $$ for a candidate based on valid records recorded by their indexes
 				ArrayList<Integer> amtList = candZipYr.get(candZipWhen);
@@ -167,11 +168,11 @@ public class Analyze {
 				}
 				// Find percentile we need to calculate
 				Collections.sort(listOfAmts);
-				double index = (perc/100) * listOfAmts.size();
-				String row = rec.getCmte()+"|"+rec.getZip()+"|"+whenYr+"|";
-                double d = listOfAmts.get((int)index);	
-                int percent = (int)d;				
-                String answers = String.valueOf(listOfAmts.get((int)index));				
+				double index = (perc/100) * listOfAmts.size();				
+				int roundIndex = (int)Math.round(index);
+                double d = listOfAmts.get(roundIndex);	
+                int percent = (int)d;  
+                String row = rec.getCmte()+"|"+rec.getZip()+"|"+whenYr+"|";				
 				row += String.valueOf(percent) + "|"+String.valueOf((int)money)+"|"+ contribut; 
 				results.add(row);
 			}
@@ -188,11 +189,11 @@ public class Analyze {
 			File inData = new File(dataPath);
 			String readLine = "";
 			BufferedReader d = new BufferedReader(new FileReader(inData));
-			while ((readLine = d.readLine()) != null) {
-				// Add data to array
-				// Some way to parse through invalid rows
+			while ((readLine = d.readLine()) != null) {				
+				// method to check valid rows through a Regex String
 				boolean check = rowValid(readLine);				
 				if (check == true){
+					// Create a Record object using that file line and add it to the ArrayList
 					Record lines = new Record(readLine);
 					theData.add(lines);
 				} 
@@ -207,17 +208,16 @@ public class Analyze {
 	public static void main (String [] args) throws IOException {
 		Analyze event = new Analyze();
 		// Get file arguments passed in
-		//String dataFile = args[0];
-		//String percentFile = args[1];
-        String dataFile = "itcont.txt";
-        String percentFile = "percentile.txt";	
+		String dataFile = args[0];
+		String percentFile = args[1];
+        //String dataFile = "itcont.txt";
+        //String percentFile = "percentile.txt";	
 		// ArrayList to hold data from itcont.txt
 		ArrayList <Record> inputs = event.dataToArray(dataFile);
-		// Percentile to calculate using the nearest-rank method
+		// Get the percentile from percentile.txt 
 		int perc = event.numInFile(percentFile);
-		ArrayList <String> results = event.resultString(perc, inputs); 
-        //System.out.println(perc);	
-		//System.out.println(inputs.get(1).getZip());
+		// Leads to main method used to parse the valid records
+		ArrayList <String> results = event.resultString(perc, inputs);         
 		event.writeToFile(results);
 	}
 }
