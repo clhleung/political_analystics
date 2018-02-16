@@ -176,19 +176,23 @@ public class Analyze {
 				ArrayList<Integer> amtList = candZipYr.get(candZipWhen);
 				ArrayList<Double> listOfAmts = new ArrayList<>();
 				double money = 0;
-				for (int i : amtList){
-					money += records.get(i).getAmt();
-					listOfAmts.add(records.get(i).getAmt());
-				}
-				// Find percentile we need to calculate
-				Collections.sort(listOfAmts);
-				double index = (perc/100) * listOfAmts.size();				
-				int roundIndex = (int)Math.round(index);
-                double d = listOfAmts.get(roundIndex);	
-                int percent = (int)d;  
-                String row = rec.getCmte()+"|"+rec.getZip()+"|"+whenYr+"|";				
-				row += String.valueOf(percent) + "|"+String.valueOf((int)money)+"|"+ contribut; 
-				results.add(row);
+				if (amtList != null){
+					for (int i : amtList){
+					   money += records.get(i).getAmt();
+					   listOfAmts.add(records.get(i).getAmt());
+				    }
+				    // Find percentile we need to calculate
+				    Collections.sort(listOfAmts);
+				    double index = (perc/100) * listOfAmts.size();				
+				    int roundIndex = (int)Math.round(index);
+					double d = 0;
+                    if (listOfAmts.size() == 0) {d = 0;}					
+				    if (listOfAmts.size() > 0) {d =listOfAmts.get(roundIndex);}	
+                    int percent = (int)d;  
+                    String row = rec.getCmte()+"|"+rec.getZip()+"|"+whenYr+"|";				
+				    row += String.valueOf(percent) + "|"+String.valueOf((int)money)+"|"+ contribut; 
+				    results.add(row);
+				}				
 			}
 		}		
 		return results;
