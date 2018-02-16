@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.*;
 import java.util.Collections;
 import java.lang.Integer;
@@ -148,6 +149,19 @@ public class Analyze {
 						} else {
 							uniqueDonorCnt.put(candZipWhen, 1);
 						}						
+					} else {
+						// Case where same donor donates to same person in multiple years
+						boolean different = true;
+						// Iterate through keys with the same donors & check candidate years
+                        for (Map.Entry entry: uniqueDonors.entrySet()){
+							if (nameZip.equals(entry.getValue())){
+								int yr = Integer.parseInt(whenYr);
+								String storedYr = (String)entry.getKey();
+								int oldYr = Integer.parseInt(storedYr.substring(storedYr.length()-4));
+								if (yr == oldYr) different = false;
+							}
+						}
+                        if (different == true) uniqueDonorCnt.put(candZipWhen, 1); 						
 					}
 				}			    
 			}	
